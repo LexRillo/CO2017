@@ -7,8 +7,7 @@ public class MessageClient {
 
 	public MessageClient(){}
 	
-	static void	main(String[] args){
-		
+	static void	main(String[] args){		
 //		Main client behaviour.
 //		Use the command line arguments to open a connection to a Message Server.
 //
