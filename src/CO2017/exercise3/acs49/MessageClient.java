@@ -26,8 +26,9 @@ public class MessageClient {
 		int port = Integer.parseInt(args[1]);
 		
 		try (Socket server = new Socket(host, port)) {
-			System.out.println("Connected to " + server.getInetAddress());
-
+			
+			  System.out.println("Connected to " + server.getInetAddress());
+			  int UIID = 0;
 		      BufferedReader in = new BufferedReader (new InputStreamReader(server.getInputStream(), "UTF-8"));
 
 		      Writer out = new OutputStreamWriter(server.getOutputStream());
@@ -35,23 +36,56 @@ public class MessageClient {
 		      BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
 		      String commando = new String();
-		      int num = 999; // sentinel
-		      int result;
+		      boolean ended = false;
 		      do {
-		        System.out.print("Enter number to square: ");
-		        num = Integer.parseInt(stdin.readLine());
-
-		        out.write(String.format("%d%n",num));
-		        out.flush();
-
-		        if (num != 999) {
-		          result = Integer.parseInt(in.readLine());
-		          System.out.printf("Server says %d x %d = %d%n",
-		                            num,
-		                            num,
-		                            result);
+		        System.out.print("?");
+		        //read from command line
+		        commando = stdin.readLine();
+		        String answer;
+		        if(commando.startsWith("GET:")){
+		        	char Cid;
+		        	int num;
+		        	try{
+			        	if(Character.isLetter(commando.charAt(4)){
+			        		Cid = commando.substring(3, 5);
+			        	}
+			        	num = Integer.parseInt(commando.substring(5));
+		        	}
+		        	//send it to the server to find it
+		        	out.write(String.format("g%c%d", Cid, num));
+		        	out.flush();
+		        	//read the response and print it
+		        	answer = in.readLine();
+		        	printf(answer);
+		        	
+		        }else if(commando.startsWith("SEND:")){
+		        	//piece of code for the send command with the id (which is probably a typo in the instructions)
+//		        	if(Character.isNumber(commando.charAt(5) && commando.charAt(6).equals(':')){
+//		        		num = commando.charAt(5);
+//		        		String body = commando.substring(6);
+//		        		//send it
+//		        	}else{}
+		        	//getting the body
+	        		String body = commando.substring(4);
+	        		UIID++;
+	        		//sending it to the server
+	        		out.write(String.format("s%d%s", UIID, body));
+		        	out.flush();
+		        	
+		        }else if(commando.equalsIgnoreCase("LIST:")){
+		        	//sending the command to the server
+		        	out.write("l");
+		        	out.flush();
+		        	answer= in.readLine();
+		        	printf(answer);
+		        	
+		        }else if(commando.equalsIgnoreCase("BYE")){
+		        	//end the loop and end the connection
+		        	ended = true;
+		        }else{
+		        	//nothing here. Move along.
 		        }
-		      } while (num!=999);
+		      } while (ended == true);
 		      System.out.println("Client shutdown");
 		      server.close();
 		  }catch (UnknownHostException e) {
