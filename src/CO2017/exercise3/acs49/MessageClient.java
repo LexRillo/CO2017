@@ -23,7 +23,7 @@ public class MessageClient {
 //
 //		Terminate the client if the command was "BYE"; otherwise wait for further user input.
 		
-		int host = Integer.parseInt(args[0]);
+		String host = args[0];
 		int port = Integer.parseInt(args[1]);
 		
 		try (Socket server = new Socket(host, port)) {
@@ -44,20 +44,23 @@ public class MessageClient {
 		        commando = stdin.readLine();
 		        String answer;
 		        if(commando.startsWith("GET:")){
-		        	char Cid;
+		        	String Cid;
 		        	int num;
-		        	try{
-			        	if(Character.isLetter(commando.charAt(4)){
-			        		Cid = commando.substring(3, 5);
-			        	}
+		        	
+		        	if(Character.isLetter(commando.charAt(4))){
+		        		Cid = commando.substring(3, 5);
+		        	
 			        	num = Integer.parseInt(commando.substring(5));
+			        	
+			        	//send it to the server to find it
+			        	out.write(String.format("g%s%d", Cid, num));
+			        	out.flush();
+			        	//read the response and print it
+			        	answer = in.readLine();
+			        	System.out.printf(answer);
+		        	}else{
+		        		System.out.printf("Invalid use of GET command");
 		        	}
-		        	//send it to the server to find it
-		        	out.write(String.format("g%c%d", Cid, num));
-		        	out.flush();
-		        	//read the response and print it
-		        	answer = in.readLine();
-		        	printf(answer);
 		        	
 		        }else if(commando.startsWith("SEND:")){
 		        	//piece of code for the send command with the id (which is probably a typo in the instructions)
@@ -78,7 +81,7 @@ public class MessageClient {
 		        	out.write("l");
 		        	out.flush();
 		        	answer= in.readLine();
-		        	printf(answer);
+		        	System.out.printf(answer);
 		        	
 		        }else if(commando.equalsIgnoreCase("BYE")){
 		        	//end the loop and end the connection
@@ -90,7 +93,7 @@ public class MessageClient {
 		      System.out.println("Client shutdown");
 		      server.close();
 		  }catch (UnknownHostException e) {
-		      System.err.println("Unknown host: "+servername);
+		      System.err.println("Unknown host: "+host);
 		      System.err.println(e);
 		      System.exit(1);
 		  }catch (IOException e) {

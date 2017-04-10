@@ -4,8 +4,8 @@ import java.net.*;
 import java.io.*;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.Iterator;
 
-import sun.net.www.MessageHeader;
 
 public class MessageServer {
 
@@ -21,7 +21,7 @@ public class MessageServer {
 //	There is no need to setup a mechanism to shut down the server (the user will KILL or Control-C the process).
 		int port = Integer.parseInt(args[1]);
 		MessageBoard board = new MessageBoard();
-		ConcurrentHashMap<InetAddress, char> clientSet;
+		ConcurrentHashMap<InetAddress, String> clientSet = new ConcurrentHashMap<InetAddress, String>();
 		//exec= (ThreadPoolExecutor) Executors.newCachedThreadPool();
 		try (ServerSocket server = new ServerSocket(port)) {
 		      while (true) {
@@ -33,33 +33,40 @@ public class MessageServer {
 		        // get and display client's IP address
 		        InetAddress clientAddress = client.getInetAddress();
 		        System.out.println("Client from " + clientAddress + " connected.");
-		        if(clientSet.get(clientAdress)== null){
-		        	clientSet.put(clientAdress, Character.toString((char) (clientSet.size()+1));
+		        if(clientSet.get(clientAddress)== null){
+		        	clientSet.put(clientAddress, Character.toString((char) (clientSet.size()+1)));
 		        }
 		        Writer out = new OutputStreamWriter(client.getOutputStream());
 		        BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream(), "UTF-8"));
+		        String commando;
+		        int num;
 		        commando = in.toString();
 		        switch(commando.charAt(0)){
-		        	case s: int num = commando.charAt(1);
+		        	case 's': num = commando.charAt(1);
         					String body = commando.substring(1);
-        					board.SaveMessage(MessageHeader(clientSet.get(clientAdress), num), body);
+        					board.SaveMessage(new MessageHeader(clientSet.get(clientAddress).charAt(0), num), body);
 		        		break;
-		        	case g: char Cid = commando.charAt(1);
-		        	        int num = commando.charAt(2);
-		        	        if(board.GetMessage(MessageHeader(Cid, num))!= null){
-		        	        	out.write(String.format("OK:%s", board.GetMessage(MessageHeader(Cid, num)));
+		        	case 'g': char Cid = commando.charAt(1);
+		        	        num = commando.charAt(2);
+		        	        if(board.GetMessage(new MessageHeader(Cid, num))!= null){
+		        	        	out.write(String.format("OK:%s", board.GetMessage(new MessageHeader(Cid, num))));
 		        	        }else{
 		        	        	out.write("ERR");	
 		        	        }
 		        		break;
-		        	case l: Set<MessageHeader> listOfHeaders = board.listHeaders();
-		        			String to_string;
-		        			for(int i=0; i< board.listHeaders().size; i++){
-		        				to_string = StringUtils.join(listOfHeaders.toString(), "%n");
+		        	case 'l': Set<MessageHeader> listOfHeaders = board.ListHeaders();
+		        			StringBuilder to_string = new StringBuilder();
+		        			Iterator<MessageHeader> it = board.ListHeaders().iterator();
+		        			while(it.hasNext()){
+		        				to_string.append(it.toString());
+		        				to_string.append("%n");
 		        			}
-		        			out.write(to_string);
+//		        			for(int i=0; i< board.ListHeaders().size(); i++){
+//		        				to_string = StringUtils.join(listOfHeaders.toString(), "%n");
+//		        			}
+		        			out.write(to_string.toString());
 		        		break;
-		        	default: System.out.println("Hmmmm. This was not supposed to happen")
+		        	default: System.out.println("Hmmmm. This was not supposed to happen");
 		        		break;
 		        }
 		        //exec.shutdown();

@@ -14,7 +14,7 @@ package CO2017.exercise3.acs49;
  * @version $Revision: 1016 $
  **/
 
-class MessageHeader {
+public class MessageHeader {
   private final char _thread;
   private final int _msgID;
 
