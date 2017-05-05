@@ -7,7 +7,7 @@ public class MessageClient {
 
 	public MessageClient(){}
 	
-	static void	main(String[] args){
+	public static void	main(String[] args){
 		
 //		Main client behaviour.
 //		Use the command line arguments to open a connection to a Message Server.
@@ -37,59 +37,55 @@ public class MessageClient {
 		      BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
 
 		      String commando = new String();
-		      boolean ended = false;
 		      do {
 		        System.out.print("?");
 		        //read from command line
 		        commando = stdin.readLine();
-		        String answer;
+		        String answer = new String();
 		        if(commando.startsWith("GET:")){
 		        	String Cid;
-		        	int num;
 		        	
 		        	if(Character.isLetter(commando.charAt(4))){
-		        		Cid = commando.substring(3, 5);
+		        		Cid = commando.substring(4, 7);
 		        	
-			        	num = Integer.parseInt(commando.substring(5));
-			        	
+			        	//num = Integer.parseInt(commando.substring(5));
+			        	//System.out.println(Cid);
 			        	//send it to the server to find it
-			        	out.write(String.format("g%s%d", Cid, num));
+			        	out.write(String.format("GET:%s%n", Cid));
 			        	out.flush();
 			        	//read the response and print it
 			        	answer = in.readLine();
-			        	System.out.printf(answer);
+			        	System.out.printf(answer+"%n");
 		        	}else{
 		        		System.out.printf("Invalid use of GET command");
 		        	}
 		        	
-		        }else if(commando.startsWith("SEND:")){
-		        	//piece of code for the send command with the id (which is probably a typo in the instructions)
-//		        	if(Character.isNumber(commando.charAt(5) && commando.charAt(6).equals(':')){
-//		        		num = commando.charAt(5);
-//		        		String body = commando.substring(6);
-//		        		//send it
-//		        	}else{}
+		        }else if(commando.startsWith("SEND:")){	        	
 		        	//getting the body
-	        		String body = commando.substring(4);
+	        		String body = commando.substring(5);
 	        		UIID++;
 	        		//sending it to the server
-	        		out.write(String.format("s%d%s", UIID, body));
+	        		String message = String.format("SEND:%d:%s%n", UIID, body);
+	        		out.write(message);
 		        	out.flush();
 		        	
-		        }else if(commando.equalsIgnoreCase("LIST:")){
+		        }else if(commando.equalsIgnoreCase("LIST")){
 		        	//sending the command to the server
-		        	out.write("l");
+		        	out.write("LIST\r\n");
 		        	out.flush();
-		        	answer= in.readLine();
-		        	System.out.printf(answer);
-		        	
-		        }else if(commando.equalsIgnoreCase("BYE")){
-		        	//end the loop and end the connection
-		        	ended = true;
+		        	boolean end = false;
+		        	while(end==false){
+		        		answer= in.readLine();
+		        		if(answer.equals(".")){
+		        			end =true;
+		        		}
+		        		System.out.printf(answer + "%n");
+		        	}
+		        			       
 		        }else{
 		        	//nothing here. Move along.
 		        }
-		      } while (ended == true);
+		      } while (!commando.equalsIgnoreCase("BYE"));
 		      System.out.println("Client shutdown");
 		      server.close();
 		  }catch (UnknownHostException e) {
