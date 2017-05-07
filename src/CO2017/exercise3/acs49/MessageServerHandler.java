@@ -72,23 +72,28 @@ public class MessageServerHandler implements Runnable {
     				to_string.append("%n");
     			}
     			out.write(to_string.toString());
-    			//System.out.println("Got command list");
+    			System.out.println("Got command list");
 	        }else if (commando.startsWith("GET:")){
 
 	        	char Cid = commando.charAt(4);
-	        	num = commando.charAt(6);
+	        	num = Integer.parseInt(commando.substring(6));
+	        	System.out.println("Got command get num "+ num + " Cid " + Cid);
     	        if(board.GetMessage(new MessageHeader(Cid, num))!= null){
+
     	        	out.write(String.format("OK:%s", board.GetMessage(new MessageHeader(Cid, num))));
     	        }else{
+    	        	System.out.println("Got command error");
     	        	out.write("ERR");
     	        }
-    	        //System.out.println("Got command get");
-	        }else if(commando.startsWith("SEND:")){
 
-	        	num = commando.charAt(5);
+	        }else if(commando.startsWith("SEND:")){
+	        	String str = commando.substring(5);
+	        	str = str.substring(0,str.indexOf(":"));
+	        	num = Integer.parseInt(str);
 				String body = commando.substring(7);
+				System.out.println("Got command send num "+ num + " body " + body);
 				board.SaveMessage(new MessageHeader(threadChar, num), body);
-				//System.out.println("Got command send");
+
 	        }else{
 	        	System.out.println("Hmmmm. This was not supposed to happen");
 	        }
