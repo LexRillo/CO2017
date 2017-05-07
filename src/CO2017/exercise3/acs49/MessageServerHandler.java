@@ -65,13 +65,16 @@ public class MessageServerHandler implements Runnable {
 	        commando = in.readLine();
 	        if(commando.equalsIgnoreCase("LIST")){
 
-	        	StringBuilder to_string = new StringBuilder();
-    			Iterator<MessageHeader> it = board.ListHeaders().iterator();
-    			while(it.hasNext()){
-    				to_string.append(it.toString());
-    				to_string.append("%n");
+	        	//StringBuilder to_string = new StringBuilder();
+	        	Set<MessageHeader> it = board.ListHeaders();
+    			for(MessageHeader mh: it){
+//    				to_string.append(it.toString());
+//    				to_string.append("%n");
+    				System.out.println("this message " + board.GetMessage(mh));
+    				out.write(board.GetMessage(mh));
+    				out.flush();
     			}
-    			out.write(to_string.toString());
+    			//out.write(to_string.toString());
     			System.out.println("Got command list");
 	        }else if (commando.startsWith("GET:")){
 
@@ -93,7 +96,6 @@ public class MessageServerHandler implements Runnable {
 				String body = commando.substring(7);
 				System.out.println("Got command send num "+ num + " body " + body);
 				board.SaveMessage(new MessageHeader(threadChar, num), body);
-
 	        }else{
 	        	System.out.println("Hmmmm. This was not supposed to happen");
 	        }

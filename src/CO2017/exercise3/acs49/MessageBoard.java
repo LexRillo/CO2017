@@ -21,7 +21,7 @@ public class MessageBoard {
 	synchronized void SaveMessage(MessageHeader mh, String msg){
 	//Add a message to the board
 	//This method will need to be synchronized.
-		if(GetMessage(mh) != null){
+		if(GetMessage(mh) == null){
 			wholeMessage.put(mh, msg);
 		}
 	}
