@@ -77,6 +77,7 @@ public class MessageClient {
 		        	while(end==false){
 		        		answer= in.readLine();
 		        		if(answer.equals(".")){
+		        			System.out.println("FINISHED LIST");
 		        			end =true;
 		        		}
 		        		System.out.printf(answer + "%n");

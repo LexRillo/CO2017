@@ -71,10 +71,11 @@ public class MessageServerHandler implements Runnable {
 //    				to_string.append(it.toString());
 //    				to_string.append("%n");
     				System.out.println("this message " + board.GetMessage(mh));
-    				out.write(board.GetMessage(mh));
+    				out.write(String.format("%s%n",mh.toString()));
     				out.flush();
     			}
-    			//out.write(to_string.toString());
+    			out.write(".");
+    			out.flush();
     			System.out.println("Got command list");
 	        }else if (commando.startsWith("GET:")){
 
@@ -82,13 +83,14 @@ public class MessageServerHandler implements Runnable {
 	        	num = Integer.parseInt(commando.substring(6));
 	        	System.out.println("Got command get num "+ num + " Cid " + Cid);
     	        if(board.GetMessage(new MessageHeader(Cid, num))!= null){
-
-    	        	out.write(String.format("OK:%s", board.GetMessage(new MessageHeader(Cid, num))));
+    	        	out.write(String.format("OK:%s%n", board.GetMessage(new MessageHeader(Cid, num))));
+    	        	out.flush();
+    	        	System.out.println("I GET HERE");
     	        }else{
     	        	System.out.println("Got command error");
-    	        	out.write("ERR");
+    	        	out.write("ERR%n");
+    	        	out.flush();
     	        }
-
 	        }else if(commando.startsWith("SEND:")){
 	        	String str = commando.substring(5);
 	        	str = str.substring(0,str.indexOf(":"));
@@ -128,6 +130,7 @@ public class MessageServerHandler implements Runnable {
 //		        		break;
 //		        }
 	        }
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
